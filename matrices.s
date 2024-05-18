@@ -15,7 +15,7 @@ create_bombs_matrix:
 
     mov x19, BOMBS
 placeBomb:
-    cbz x19, placeNums
+    cbz x19, placeNums      // placeNums does the final ret
     bl randomNumber
     lsl x1, x1, 2
     ldr x9, [x2, x1]
@@ -88,7 +88,7 @@ endAction:
 
 case1:
     mov x3, 1
-    mov x4, 1
+    mov x4, 0
     mov x5, 1
     mov x6, 1
     // loop through 1st col, call _placeNums
@@ -102,10 +102,10 @@ _case1:
     ret
 
 case2:
-    mov x3, 1
-    mov x4, 0
+    mov x3, 0
+    mov x4, 1
     mov x5, 1
-    mov x6, 1
+    mov x6, 0
     // loop through last col, call _placeNums
     mov x21, SIZE_X     // last col
     sub x21, x21, 1     // -1 bc indexing starts at 0
@@ -118,10 +118,10 @@ _case1:
     ret
 
 case3:
-    mov x3, 0
+    mov x3, 1
     mov x4, 1
     mov x5, 1
-    mov x6, 0
+    mov x6, 1
     // loop through the middle, call _placeNums
     mov x21, SIZE_X     // iterate on x
     sub x21, x21, 1     // -1 bc last col not included
