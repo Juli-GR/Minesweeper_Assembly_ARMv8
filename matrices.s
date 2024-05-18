@@ -9,7 +9,7 @@ create_bombs_matrix:
 
     // x2: matrix
 
-    // save x19, lr
+    // save x19, x20, x21, lr (lr todas las veces!!!!!!!!!!!!!!!!)
 
     bl initialize
 
@@ -29,14 +29,14 @@ placeBomb:
 /*
 if current_num==9: add one to every not-9-forward-neighbor
 else: current_num++ for every 9-forward-neighbor
-4 cases:
-    1st column without last box
-    last column without last box
-    middle columns without last box
-    last row without last box
+4 cases, depending on the possible forward-neighbors:
+    1- 1st column without last cell
+    2- last column without last cell
+    3- middle columns without last row
+    4- last row without last cell
 notice that:
-    the very last box is excluded
-    the algorithm works with any order of the boxes
+    the very last cell is excluded
+    the algorithm works with any order of the cells
 */
 placeNums:
     bl case1
@@ -85,12 +85,20 @@ isBomb:
 endAction:
     ret
 
+
 case1:
     mov x3, 1
     mov x4, 1
     mov x5, 1
     mov x6, 1
-    // loop through appropriate sections and call _placeNums
+    // loop through 1st col, call _placeNums
+    mov x21, xzr        // 1st col
+    mov x20, SIZE_Y     // iterate on y
+    sub x20, x20, 1     // -1 bc last cell not included
+_case1:
+    bl _placeNums
+    sub x20, x20, 1
+    cbnz x20, _case1
     ret
 
 case2:
@@ -98,7 +106,15 @@ case2:
     mov x4, 0
     mov x5, 1
     mov x6, 1
-    // loop through appropriate sections and call _placeNums
+    // loop through last col, call _placeNums
+    mov x21, SIZE_X     // last col
+    sub x21, x21, 1     // -1 bc indexing starts at 0
+    mov x20, SIZE_Y     // iterate on y
+    sub x20, x20, 1     // -1 bc last cell not included
+_case1:
+    sub x20, x20, 1     // subtract before the call, to fix indexing
+    bl _placeNums
+    cbnz x20, _case1
     ret
 
 case3:
@@ -106,7 +122,19 @@ case3:
     mov x4, 1
     mov x5, 1
     mov x6, 0
-    // loop through appropriate sections and call _placeNums
+    // loop through the middle, call _placeNums
+    mov x21, SIZE_X     // iterate on x
+    sub x21, x21, 1     // -1 bc last col not included
+_case3:
+    sub x21, x21, 1     // subtract before the call, to fix indexing
+    mov x20, SIZE_Y     // iterate on y
+    sub x20, x20, 1     // -1 bc last row not included
+__case3:
+    sub x20, x20, 1     // subtract before the call, to fix indexing
+    bl _placeNums
+    cbnz x20, __case3
+    cmp x21, 1          // compare with 1 bc 1st col not included
+    b.ne _case3
     ret
 
 case4:
@@ -114,7 +142,15 @@ case4:
     mov x4, 0
     mov x5, 0
     mov x6, 0
-    // loop through appropriate sections and call _placeNums
+    // loop through last row, call _placeNums
+    mov x21, SIZE_X     // iterate on x
+    sub x21, x21, 1     // -1 bc last cell not included
+    mov x20, SIZE_Y     // 1st row
+    sub x20, x20, 1     // -1 bc indexing starts at 0
+_case4:
+    sub x21, x21, 1     // subtract before the call, to fix indexing
+    bl _placeNums
+    cbnz x20, _case1
     ret
 
 

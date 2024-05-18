@@ -5,7 +5,7 @@ x0: framebuffer
 x1: ret vals from functions
 x2: argument for functions
 x19: bombs matrix
-x20: boxes matrix
+x20: cells matrix
 x21: gpio base
 x22: current pressed keys
 */
@@ -31,7 +31,7 @@ main:
     mov x2, x19
     bl create_bombs_matrix
     mov x2, x20
-    bl create_boxes_matrix
+    bl create_cells_matrix
 
     bl draw_board
 
@@ -46,7 +46,7 @@ check for pressed keys in a loop:
         execute the correct operation
         these calls will jump back to userInputLoop
     the space is pressed:
-        call a function to open the box
+        call a function to open the cell
         check if the game ended
         if not, jump back to userInputLoop
 */
@@ -81,7 +81,7 @@ _userInputLoop:
     // space
     and w10, w22, 0b00100000
     cbz w10, _userInputLoop
-    bl openBox
+    bl openCell
     cmp x1, 1
     b.eq Win
     cmp x1, 2
