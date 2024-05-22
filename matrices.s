@@ -45,24 +45,33 @@ placeNums:
     bl case4
     ret
 
-// x1: current_num
+// x20*(SIZE_X-1) + x21: current_num
+// x1: current_num, x7: neighbor
 _placeNums:
     //       cn x3
     //    x4 x5 x6
+    mov x1, SIZE_X      // calculate current_num * 4
+    mul x1, x20, x1
+    sub x1, x1, SIZE_X
+    add x1, x1, x21
+    lsl x1, x1, 2
+
     cbz x3, reg4
-    mov x7, x3
+    add x7, x1, 4
     bl action
 reg4:
     cbz x4, reg5
-    mov x7, x4
+    add x7, x1, SIZE_X
+    sub x7, x7, 4
     bl action
 reg5:
     cbz x5, reg6
-    mov x7, x5
+    add x7, x1, SIZE_X
     bl action
 reg6:
     cbz x6, endPlaceNums
-    mov x7, x6
+    add x7, x1, SIZE_X
+    add x7, x7, 4
     bl action
 endPlaceNums:
     ret
@@ -111,10 +120,10 @@ case2:
     sub x21, x21, 1     // -1 bc indexing starts at 0
     mov x20, SIZE_Y     // iterate on y
     sub x20, x20, 1     // -1 bc last cell not included
-_case1:
-    sub x20, x20, 1     // subtract before the call, to fix indexing
+_case2:
     bl _placeNums
-    cbnz x20, _case1
+    sub x20, x20, 1
+    cbnz x20, _case2
     ret
 
 case3:
@@ -124,14 +133,13 @@ case3:
     mov x6, 1
     // loop through the middle, call _placeNums
     mov x21, SIZE_X     // iterate on x
-    sub x21, x21, 1     // -1 bc last col not included
 _case3:
-    sub x21, x21, 1     // subtract before the call, to fix indexing
+    sub x21, x21, 1
     mov x20, SIZE_Y     // iterate on y
     sub x20, x20, 1     // -1 bc last row not included
 __case3:
-    sub x20, x20, 1     // subtract before the call, to fix indexing
     bl _placeNums
+    sub x20, x20, 1
     cbnz x20, __case3
     cmp x21, 1          // compare with 1 bc 1st col not included
     b.ne _case3
@@ -145,12 +153,11 @@ case4:
     // loop through last row, call _placeNums
     mov x21, SIZE_X     // iterate on x
     sub x21, x21, 1     // -1 bc last cell not included
-    mov x20, SIZE_Y     // 1st row
-    sub x20, x20, 1     // -1 bc indexing starts at 0
+    mov x20, SIZE_Y     // last row
 _case4:
-    sub x21, x21, 1     // subtract before the call, to fix indexing
     bl _placeNums
-    cbnz x20, _case1
+    sub x21, x21, 1
+    cbnz x20, _case4
     ret
 
 
