@@ -1,4 +1,6 @@
-#include "constants.inc"
+.equ CELLS_X,         16
+.equ CELLS_Y,         12
+.equ BOMBS,           32    // 1/6 of the total cells, as usual
 
 /*
 normal cells: 1 to 8, indicates number of bombs around them
@@ -27,8 +29,8 @@ placeBomb:
     b placeBomb
 
 /*
-if current_num==9: add one to every not-9-forward-neighbor
-else: current_num++ for every 9-forward-neighbor
+if arr[current_num]==9: add one to every not-9-forward-neighbor
+else: arr[current_num]++ for every 9-forward-neighbor
 4 cases, depending on the possible forward-neighbors:
     1- 1st column without last cell
     2- last column without last cell
@@ -45,14 +47,16 @@ placeNums:
     bl case4
     ret
 
-// x20*(SIZE_X-1) + x21: current_num
+// x20*(CELLS_X-1) + x21: current_num
+// x20, x21 from 0
+// current_num from 0 to CELLS_X*CELLS_Y -1
 // x1: current_num, x7: neighbor
 _placeNums:
     //       cn x3
     //    x4 x5 x6
-    mov x1, SIZE_X      // calculate current_num * 4
+    mov x1, CELLS_X      // calculate current_num * 4
     mul x1, x20, x1
-    sub x1, x1, SIZE_X
+    sub x1, x1, CELLS_X
     add x1, x1, x21
     lsl x1, x1, 2
 
@@ -61,16 +65,16 @@ _placeNums:
     bl action
 reg4:
     cbz x4, reg5
-    add x7, x1, SIZE_X
+    add x7, x1, CELLS_X
     sub x7, x7, 4
     bl action
 reg5:
     cbz x5, reg6
-    add x7, x1, SIZE_X
+    add x7, x1, CELLS_X
     bl action
 reg6:
     cbz x6, endPlaceNums
-    add x7, x1, SIZE_X
+    add x7, x1, CELLS_X
     add x7, x7, 4
     bl action
 endPlaceNums:
@@ -102,11 +106,11 @@ case1:
     mov x6, 1
     // loop through 1st col, call _placeNums
     mov x21, xzr        // 1st col
-    mov x20, SIZE_Y     // iterate on y
+    mov x20, CELLS_Y     // iterate on y
     sub x20, x20, 1     // -1 bc last cell not included
 _case1:
-    bl _placeNums
     sub x20, x20, 1
+    bl _placeNums
     cbnz x20, _case1
     ret
 
@@ -116,13 +120,13 @@ case2:
     mov x5, 1
     mov x6, 0
     // loop through last col, call _placeNums
-    mov x21, SIZE_X     // last col
+    mov x21, CELLS_X     // last col
     sub x21, x21, 1     // -1 bc indexing starts at 0
-    mov x20, SIZE_Y     // iterate on y
+    mov x20, CELLS_Y     // iterate on y
     sub x20, x20, 1     // -1 bc last cell not included
 _case2:
-    bl _placeNums
     sub x20, x20, 1
+    bl _placeNums
     cbnz x20, _case2
     ret
 
@@ -132,14 +136,15 @@ case3:
     mov x5, 1
     mov x6, 1
     // loop through the middle, call _placeNums
-    mov x21, SIZE_X     // iterate on x
+    mov x21, CELLS_X     // iterate on x
+    sub x21, x21, 1     // -1 bc last col not included
 _case3:
     sub x21, x21, 1
-    mov x20, SIZE_Y     // iterate on y
+    mov x20, CELLS_Y     // iterate on y
     sub x20, x20, 1     // -1 bc last row not included
 __case3:
-    bl _placeNums
     sub x20, x20, 1
+    bl _placeNums
     cbnz x20, __case3
     cmp x21, 1          // compare with 1 bc 1st col not included
     b.ne _case3
@@ -151,12 +156,13 @@ case4:
     mov x5, 0
     mov x6, 0
     // loop through last row, call _placeNums
-    mov x21, SIZE_X     // iterate on x
+    mov x21, CELLS_X     // iterate on x
     sub x21, x21, 1     // -1 bc last cell not included
-    mov x20, SIZE_Y     // last row
+    mov x20, CELLS_Y     // last row
+    sub x20, x20, 1     // -1 bc indexing starts at 0
 _case4:
-    bl _placeNums
     sub x21, x21, 1
+    bl _placeNums
     cbnz x20, _case4
     ret
 
@@ -166,7 +172,7 @@ _case4:
 initialize:
     ret
 
-// generate random num between 0 and SIZE_X*SIZE_Y-1
+// generate random num between 0 and CELLS_X*CELLS_Y-1
 // returns the value in x1
 randomNumber:
     ret
