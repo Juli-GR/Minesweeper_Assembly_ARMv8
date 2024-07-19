@@ -22,10 +22,10 @@ draw_board:
     str x21, [sp, 16]
     str x20, [sp, 8]
     str lr, [sp]
-    mov x21, CELLS_X        // iterate on x
+    mov x21, CELLS_X            // iterate on x
 _draw_board:
     sub x21, x21, 1
-    mov x20, CELLS_Y        // iterate on y
+    mov x20, CELLS_Y            // iterate on y
 __draw_board:
     sub x20, x20, 1
     mov x1, x21
@@ -108,7 +108,7 @@ upper_side:
     add x4, x4, 1
     bl square
     add x22, x22, 1
-    add x2, x2, 1           // next row
+    add x2, x2, 1               // next row
     cmp x22, SHADOW_PIXELS
     b.ne upper_side
 
@@ -122,7 +122,7 @@ left_side:
     add x3, x3, 1
     bl square
     add x22, x22, 1
-    add x1, x1, 1           // next col
+    add x1, x1, 1               // next col
     cmp x22, SHADOW_PIXELS
     b.ne left_side
 
@@ -142,7 +142,7 @@ lower_side:
     add x4, x4, 1
     bl square
     add x22, x22, 1
-    sub x2, x2, 1           // prev row
+    sub x2, x2, 1               // prev row
     cmp x22, SHADOW_PIXELS
     b.ne lower_side
 
@@ -162,7 +162,7 @@ right_side:
     add x3, x3, 1
     bl square
     add x22, x22, 1
-    sub x1, x1, 1           // prev col
+    sub x1, x1, 1               // prev col
     cmp x22, SHADOW_PIXELS
     b.ne right_side
 

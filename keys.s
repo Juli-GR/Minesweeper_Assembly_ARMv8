@@ -77,50 +77,65 @@ _unmark_cell:
     add sp, sp, 8
     ret
 
+/*
+open current cell
+run the cascade algorithm if it is a 0-cell
+return value in x1:
+    1 --> Win
+    2 --> Loss
+    0 --> Otherwise
+*/
 .globl openCell
 openCell:
     sub sp, sp, 16
     str x23, [sp, 8]
     str lr, [sp]
-    mov x1, x21
-    mov x2, x22
+
     mov x10, CELLS_X
-    mul x10, x10, x2
-    add x10, x10, x1
-    lsl x10, x10, 2
-    add x23, x19, x10
-    add x12, x20, x10
+    mul x10, x10, x22
+    add x10, x10, x21
+    lsl x10, x10, 2             // x10: ( y*CELLS_X + x ) * 4
+    add x23, x19, x10           // x23: index in the bombs matrix
+    add x12, x20, x10           // x12: index in the cells matrix
     mov x9, 1
-    stur w9, [x12]
-    ldur w3, [x23]
-    bl draw_open_cell
+    stur w9, [x12]              // open the cell
+    add x25, x25, 1             // increase open cells counter
+
     mov x1, x21
     mov x2, x22
-    bl draw_marked_cell
+    ldur w3, [x23]
+    bl draw_open_cell           // draw the open cell
+
+    mov x1, x21
+    mov x2, x22
+    bl draw_marked_cell         // draw the marked cell
+
+    // run cascade algorithm only if it is a 0-cell
     ldur w9, [x23]
-    cbnz x9, no_cascade     // run cascade algorithm only if the cell is 0
+    cbnz x9, skip_cascade
     mov x1, x21
     mov x2, x22
     mov x3, x19
     mov x4, x20
     bl cascade
-no_cascade:
+
+skip_cascade:
+    // set ret value in x1
     mov x1, 0
-    ldur w3, [x23]
-    cmp x3, 9
-    b.ne _openCell
-    mov x1, 2
-    b __openCell
-_openCell:
-    add x25, x25, 1
+    ldur w9, [x23]
+    cmp x9, 9
+    b.ne not_bomb
+    mov x1, 2                   // x1=2 if the cell was a bomb
+    b _openCell
+not_bomb:
     mov x9, CELLS_X
     mov x13, CELLS_Y
     mul x9, x9, x13
-    sub x9, x9, BOMBS
+    sub x9, x9, BOMBS           // x9: CELLS_X*CELLS_Y - BOMBS
     cmp x25, x9
-    b.ne __openCell
-    mov x1, 1
-__openCell:
+    b.ne _openCell
+    mov x1, 1                   // x1=1 if all non-bomb cells were opened
+_openCell:
     ldr lr, [sp]
     ldr x23, [sp, 8]
     add sp, sp, 16

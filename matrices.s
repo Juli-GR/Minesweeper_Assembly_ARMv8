@@ -25,7 +25,7 @@ create_bombs_matrix:
 
     mov x19, BOMBS
 placeBomb:
-    cbz x19, placeNums      // placeNums does the final ret
+    cbz x19, placeNums          // placeNums does the final ret
     bl randomNumber
     lsl x1, x1, 2
     add x10, x2, x1
@@ -73,7 +73,7 @@ _placeNums:
     sub sp, sp, 8
     str lr, [sp]
 
-    mov x1, CELLS_X      // calculate current_num (* 4)
+    mov x1, CELLS_X             // calculate current_num (* 4)
     mul x1, x20, x1
     add x1, x1, x21
     lsl x1, x1, 2
@@ -139,9 +139,9 @@ case1:
     mov x5, 1
     mov x6, 1
     // loop through 1st col, call _placeNums
-    mov x21, xzr        // 1st col
-    mov x20, CELLS_Y     // iterate on y
-    sub x20, x20, 1     // -1 bc last cell not included
+    mov x21, xzr                // 1st col
+    mov x20, CELLS_Y            // iterate on y
+    sub x20, x20, 1             // -1 bc last cell not included
 _case1:
     sub x20, x20, 1
     bl _placeNums
@@ -158,10 +158,10 @@ case2:
     mov x5, 1
     mov x6, 0
     // loop through last col, call _placeNums
-    mov x21, CELLS_X     // last col
-    sub x21, x21, 1     // -1 bc indexing starts at 0
-    mov x20, CELLS_Y     // iterate on y
-    sub x20, x20, 1     // -1 bc last cell not included
+    mov x21, CELLS_X            // last col
+    sub x21, x21, 1             // -1 bc indexing starts at 0
+    mov x20, CELLS_Y            // iterate on y
+    sub x20, x20, 1             // -1 bc last cell not included
 _case2:
     sub x20, x20, 1
     bl _placeNums
@@ -178,17 +178,17 @@ case3:
     mov x5, 1
     mov x6, 1
     // loop through the middle, call _placeNums
-    mov x21, CELLS_X     // iterate on x
-    sub x21, x21, 1     // -1 bc last col not included
+    mov x21, CELLS_X            // iterate on x
+    sub x21, x21, 1             // -1 bc last col not included
 _case3:
     sub x21, x21, 1
-    mov x20, CELLS_Y     // iterate on y
-    sub x20, x20, 1     // -1 bc last row not included
+    mov x20, CELLS_Y            // iterate on y
+    sub x20, x20, 1             // -1 bc last row not included
 __case3:
     sub x20, x20, 1
     bl _placeNums
     cbnz x20, __case3
-    cmp x21, 1          // compare with 1 bc 1st col not included
+    cmp x21, 1                  // compare with 1 bc 1st col not included
     b.ne _case3
     ldr lr, [sp]
     add sp, sp, 8
@@ -202,10 +202,10 @@ case4:
     mov x5, 0
     mov x6, 0
     // loop through last row, call _placeNums
-    mov x21, CELLS_X     // iterate on x
-    sub x21, x21, 1     // -1 bc last cell not included
-    mov x20, CELLS_Y     // last row
-    sub x20, x20, 1     // -1 bc indexing starts at 0
+    mov x21, CELLS_X            // iterate on x
+    sub x21, x21, 1             // -1 bc last cell not included
+    mov x20, CELLS_Y            // last row
+    sub x20, x20, 1             // -1 bc indexing starts at 0
 _case4:
     sub x21, x21, 1
     bl _placeNums
