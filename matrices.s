@@ -1,6 +1,10 @@
-.equ CELLS_X,         16
-.equ CELLS_Y,         12
-.equ BOMBS,           32    // 1/6 of the total cells, as usual
+    .equ CELLS_X,         16
+    .equ CELLS_Y,         12
+    .equ BOMBS,           1    // 1/6 of the total cells, as usual
+
+.globl create_cells_matrix
+create_cells_matrix:
+    b initialize
 
 /*
 normal cells: 1 to 8, indicates number of bombs around them
@@ -9,9 +13,13 @@ bombs: 9
 .globl create_bombs_matrix
 create_bombs_matrix:
 
-    // x2: matrix
+    sub sp, sp, 32
+    str x19, [sp, 24]
+    str x20, [sp, 16]
+    str x21, [sp, 8]
+    str lr, [sp]
 
-    // save x19, x20, x21, lr (lr todas las veces!!!!!!!!!!!!!!!!)
+    // x2: matrix
 
     bl initialize
 
@@ -20,11 +28,12 @@ placeBomb:
     cbz x19, placeNums      // placeNums does the final ret
     bl randomNumber
     lsl x1, x1, 2
-    ldr x9, [x2, x1]
+    add x10, x2, x1
+    ldur w9, [x10]
     cmp x9, 9
     b.eq placeBomb
     mov x9, 9
-    str x9, [x2, x1]
+    stur w9, [x10]
     sub x19, x19, 1
     b placeBomb
 
@@ -45,18 +54,27 @@ placeNums:
     bl case2
     bl case3
     bl case4
+    ldr lr, [sp]
+    ldr x21, [sp, 8]
+    ldr x20, [sp, 16]
+    ldr x19, [sp, 24]
+    add sp, sp, 32
     ret
 
-// x20*(CELLS_X-1) + x21: current_num
-// x20, x21 from 0
-// current_num from 0 to CELLS_X*CELLS_Y -1
-// x1: current_num, x7: neighbor
+/*
+x20*CELLS_X + x21: current_num
+x21, x20 from 0
+current_num from 0 to CELLS_X*CELLS_Y -1
+x1: current_num, x7: neighbor
+      cn x3
+   x4 x5 x6
+*/
 _placeNums:
-    //       cn x3
-    //    x4 x5 x6
-    mov x1, CELLS_X      // calculate current_num * 4
+    sub sp, sp, 8
+    str lr, [sp]
+
+    mov x1, CELLS_X      // calculate current_num (* 4)
     mul x1, x20, x1
-    sub x1, x1, CELLS_X
     add x1, x1, x21
     lsl x1, x1, 2
 
@@ -65,41 +83,57 @@ _placeNums:
     bl action
 reg4:
     cbz x4, reg5
-    add x7, x1, CELLS_X
+    mov x10, CELLS_X
+    lsl x10, x10, 2
+    add x7, x1, x10
     sub x7, x7, 4
     bl action
 reg5:
     cbz x5, reg6
-    add x7, x1, CELLS_X
+    mov x10, CELLS_X
+    lsl x10, x10, 2
+    add x7, x1, x10
     bl action
 reg6:
     cbz x6, endPlaceNums
-    add x7, x1, CELLS_X
+    mov x10, CELLS_X
+    lsl x10, x10, 2
+    add x7, x1, x10
     add x7, x7, 4
     bl action
 endPlaceNums:
+    ldr lr, [sp]
+    add sp, sp, 8
     ret
 
 action:
-    ldr x10, [x2, x1]
-    ldr x11, [x2, x7]
+    sub sp, sp, 8
+    str lr, [sp]
+    add x12, x2, x1
+    add x13, x2, x7
+    ldur w10, [x12]
+    ldur w11, [x13]
     cmp x10, 9
     b.eq isBomb
     cmp x11, 9
     b.ne endAction
     add x10, x10, 1
-    str x10, [x2, x1]
+    stur w10, [x12]
     b endAction
 isBomb:
     cmp x11, 9
     b.eq endAction
     add x11, x11, 1
-    str x11, [x2, x7]
+    stur w11, [x13]
 endAction:
+    ldr lr, [sp]
+    add sp, sp, 8
     ret
 
 
 case1:
+    sub sp, sp, 8
+    str lr, [sp]
     mov x3, 1
     mov x4, 0
     mov x5, 1
@@ -112,9 +146,13 @@ _case1:
     sub x20, x20, 1
     bl _placeNums
     cbnz x20, _case1
+    ldr lr, [sp]
+    add sp, sp, 8
     ret
 
 case2:
+    sub sp, sp, 8
+    str lr, [sp]
     mov x3, 0
     mov x4, 1
     mov x5, 1
@@ -128,9 +166,13 @@ _case2:
     sub x20, x20, 1
     bl _placeNums
     cbnz x20, _case2
+    ldr lr, [sp]
+    add sp, sp, 8
     ret
 
 case3:
+    sub sp, sp, 8
+    str lr, [sp]
     mov x3, 1
     mov x4, 1
     mov x5, 1
@@ -148,9 +190,13 @@ __case3:
     cbnz x20, __case3
     cmp x21, 1          // compare with 1 bc 1st col not included
     b.ne _case3
+    ldr lr, [sp]
+    add sp, sp, 8
     ret
 
 case4:
+    sub sp, sp, 8
+    str lr, [sp]
     mov x3, 1
     mov x4, 0
     mov x5, 0
@@ -163,16 +209,30 @@ case4:
 _case4:
     sub x21, x21, 1
     bl _placeNums
-    cbnz x20, _case4
+    cbnz x21, _case4
+    ldr lr, [sp]
+    add sp, sp, 8
     ret
 
 
 
 // init matrix with 0s (stored in x2)
 initialize:
+    mov x10, CELLS_X
+    mov x11, CELLS_Y
+    mul x10, x10, x11
+    lsl x10, x10, 2
+_initialize:
+    sub x10, x10, 4
+    add x12, x2, x10
+    stur wzr, [x12]
+    cbnz x10, _initialize
     ret
 
-// generate random num between 0 and CELLS_X*CELLS_Y-1
-// returns the value in x1
+/*
+generate random num between 0 and CELLS_X*CELLS_Y-1
+returns the value in x1
+*/
 randomNumber:
+    mov x1, 3
     ret
