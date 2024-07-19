@@ -21,4 +21,5 @@
 .equ DARK_PINK,       0xe86c95
 .equ RED,             0xe41818
 .equ GRAY,            0xe4e4e4
-.equ BLACK,           0x808080
+.equ WHITE,           0xffffff
+.equ BLACK,           0x000000

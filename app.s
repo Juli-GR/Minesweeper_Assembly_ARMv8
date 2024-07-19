@@ -1,20 +1,26 @@
-.equ CELLS_X,         16
-.equ CELLS_Y,         12
+    .equ CELLS_X,         16
+    .equ CELLS_Y,         12
 
-.equ GPIO_BASE,       0x3f200000
-.equ GPIO_GPFSEL0,    0x00
-.equ GPIO_GPLEV0,     0x34
+    .equ GPIO_BASE,       0x3f200000
+    .equ GPIO_GPFSEL0,    0x00
+    .equ GPIO_GPLEV0,     0x34
 
-/*
-x0: framebuffer
-x1: ret vals from functions
-x2: argument for functions
-x19: bombs matrix
-x20: cells matrix
-(x21, x22): current cell (x,y)
-x23: gpio base
-x24: current pressed keys
-*/
+    .equ SCREEN_WIDTH,    640
+    .equ SCREEN_HEIGH,    480
+    .equ WHITE,           0xffffff
+    .equ BLACK,           0x000000
+
+    /*
+    x0: framebuffer
+    x1: ret vals from functions
+    x2: argument for functions
+    x19: bombs matrix
+    x20: cells matrix
+    (x21, x22): current cell (x,y)
+    x23: gpio base
+    x24: current pressed keys
+    x25: number of open cells
+    */
 
 .globl main
 main:
@@ -39,6 +45,7 @@ main:
 
     mov x21, 0
     mov x22, 0
+    mov x25, 0
 
     bl draw_board
     mov x1, x21
@@ -96,4 +103,27 @@ _userInputLoop:
     b.eq Win
     b.gt Loss
 
-    b _userInputLoop
+    b userInputLoop
+
+Win:
+    // white screen
+    mov x1, 0
+    mov x2, 0
+    mov x3, SCREEN_WIDTH
+    mov x4, SCREEN_HEIGH
+    mov x5, WHITE
+    bl square
+    b loop
+
+Loss:
+    // black screen
+    mov x1, 0
+    mov x2, 0
+    mov x3, SCREEN_WIDTH
+    mov x4, SCREEN_HEIGH
+    mov x5, BLACK
+    bl square
+    b loop
+
+loop:
+    b loop

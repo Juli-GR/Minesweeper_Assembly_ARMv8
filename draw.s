@@ -1,17 +1,17 @@
-.equ CELLS_X,         16
-.equ CELLS_Y,         12
-.equ PIXELS_PER_CELL, 40
-.equ SHADOW_PIXELS,   4
-.equ NUMBERS_WIDTH,   3
-.equ NUMBERS_HEIGHT,  24
-.equ SPACES_WIDTH,    4
+    .equ CELLS_X,         16
+    .equ CELLS_Y,         12
+    .equ PIXELS_PER_CELL, 40
+    .equ SHADOW_PIXELS,   4
+    .equ NUMBERS_WIDTH,   3
+    .equ NUMBERS_HEIGHT,  24
+    .equ SPACES_WIDTH,    4
 
-.equ PINK,            0xff9fbf
-.equ WHITE_PINK,      0xffc8da
-.equ DARK_PINK,       0xe86c95
-.equ RED,             0xe41818
-.equ GRAY,            0xe4e4e4
-.equ BLACK,           0x808080
+    .equ PINK,            0xff9fbf
+    .equ WHITE_PINK,      0xffc8da
+    .equ DARK_PINK,       0xe86c95
+    .equ RED,             0xe41818
+    .equ GRAY,            0xe4e4e4
+    .equ BLACK,           0x808080
 
 // x from 0 to CELLS_X-1
 // y from 0 to CELLS_Y-1
