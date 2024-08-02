@@ -4,7 +4,7 @@ This minesweeper was programmed using the base provided by
 the Computer Organization course at FAMAF in 2023
 (start.s, gpiom and Makefile files)  
 
-![minesweeper](https://github.com/user-attachments/assets/82d52b2a-19e7-4389-a3f7-aa5362039be3)  
+![minesweeper](https://github.com/user-attachments/assets/4903f5ac-9ca9-48f4-9faa-d974ec82e9c1)
 
 ## How to install QEMU
 ```
