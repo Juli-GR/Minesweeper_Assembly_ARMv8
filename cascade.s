@@ -92,6 +92,13 @@ _cascade:
     cmp x20, x21
     b.ne _cascade
 
+    // free up the queues space
+    mov x10, CELLS_X
+    mov x11, CELLS_Y
+    mul x10, x10, x11
+    lsl x10, x10, 3             // CELLS_X*CELLS_Y*4 (*2 bc there are two queues)
+    add sp, sp, x10
+
     ldr lr, [sp]
     ldr x27, [sp, 8]
     ldr x26, [sp, 16]

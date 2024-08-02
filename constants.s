@@ -23,3 +23,7 @@
 .equ GRAY,            0xe4e4e4
 .equ WHITE,           0xffffff
 .equ BLACK,           0x000000
+
+.equ RAND_NUM_A,      1812433253
+.equ RAND_NUM_B,      4644327
+.equ SEED,            4839

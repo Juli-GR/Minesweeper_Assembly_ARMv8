@@ -1,6 +1,10 @@
     .equ CELLS_X,         16
     .equ CELLS_Y,         12
-    .equ BOMBS,           1    // 1/6 of the total cells, as usual
+    .equ BOMBS,           32    // 1/6 of the total cells, as usual
+
+    .equ RAND_NUM_A,      1812433253
+    .equ RAND_NUM_B,      4644327
+    .equ SEED,            4839
 
 .globl create_cells_matrix
 create_cells_matrix:
@@ -13,13 +17,17 @@ bombs: 9
 .globl create_bombs_matrix
 create_bombs_matrix:
 
-    sub sp, sp, 32
-    str x19, [sp, 24]
-    str x20, [sp, 16]
-    str x21, [sp, 8]
+    sub sp, sp, 40
+    str x19, [sp, 32]
+    str x20, [sp, 24]
+    str x21, [sp, 16]
+    str x22, [sp, 8]
     str lr, [sp]
 
     // x2: matrix
+
+    // x22: reg for randomNumber
+    mov x22, SEED
 
     bl initialize
 
@@ -55,10 +63,11 @@ placeNums:
     bl case3
     bl case4
     ldr lr, [sp]
-    ldr x21, [sp, 8]
-    ldr x20, [sp, 16]
-    ldr x19, [sp, 24]
-    add sp, sp, 32
+    ldr x22, [sp, 8]
+    ldr x21, [sp, 16]
+    ldr x20, [sp, 24]
+    ldr x19, [sp, 32]
+    add sp, sp, 40
     ret
 
 /*
@@ -234,5 +243,21 @@ generate random num between 0 and CELLS_X*CELLS_Y-1
 returns the value in x1
 */
 randomNumber:
-    mov x1, 3
+    ldr x9, =RAND_NUM_A
+    mul x22, x22, x9
+    ldr x9, =RAND_NUM_B
+    add x22, x22, x9            // x22: x22*RAND_NUM_A + RAND_NUM_B
+
+    // keep the low 32 bits
+    mov x11, 1
+    lsl x11, x11, 32
+    sub x11, x11, 1             // x11: 0..01..1
+    and x22, x22, x11
+
+    mov x10, CELLS_X
+    mov x11, CELLS_Y
+    mul x10, x10, x11           // x10: CELLS_X*CELLS_Y = N
+    mul x1, x22, x10            // x1: x22*N
+    lsr x1, x1, 32              // keep the high 32 bits
+
     ret
