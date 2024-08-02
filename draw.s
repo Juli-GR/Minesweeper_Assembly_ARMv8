@@ -10,7 +10,8 @@
     .equ WHITE_PINK,      0xffc8da
     .equ DARK_PINK,       0xe86c95
     .equ RED,             0xe41818
-    .equ GRAY,            0xe4e4e4
+    .equ LIGHT_GRAY,      0xe4e4e4
+    .equ DARK_GRAY,       0xd9d9d9
     .equ BLACK,           0x808080
 
 // x from 0 to CELLS_X-1
@@ -183,6 +184,15 @@ draw_open_cell:
     str x25, [sp, 8]
     str lr, [sp]
 
+	// set the interleaved background color
+    ldr x5, =LIGHT_GRAY
+    add x9, x1, x2
+    and x9, x9, 1
+    cmp x9, 1
+    b.ne light_gray
+    ldr x5, =DARK_GRAY
+light_gray:
+
     mov x10, PIXELS_PER_CELL
     mul x1, x1, x10
     mul x2, x2, x10
@@ -195,7 +205,6 @@ draw_open_cell:
     mov x24, x22
     mov x25, x3
 
-    ldr x5, =GRAY
     add x3, x1, PIXELS_PER_CELL
     add x4, x2, PIXELS_PER_CELL
     bl square

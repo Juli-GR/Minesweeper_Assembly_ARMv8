@@ -6,7 +6,7 @@ the Computer Organization course at FAMAF in 2023
 
 ![minesweeper](https://github.com/user-attachments/assets/82d52b2a-19e7-4389-a3f7-aa5362039be3)  
 
-## How to install qemu
+## How to install QEMU
 ```
 sudo apt update
 # set up AARCH64 toolchain

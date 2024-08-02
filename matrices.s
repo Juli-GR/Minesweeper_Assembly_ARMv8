@@ -248,11 +248,8 @@ randomNumber:
     ldr x9, =RAND_NUM_B
     add x22, x22, x9            // x22: x22*RAND_NUM_A + RAND_NUM_B
 
-    // keep the low 32 bits
-    mov x11, 1
-    lsl x11, x11, 32
-    sub x11, x11, 1             // x11: 0..01..1
-    and x22, x22, x11
+    lsl x22, x22, 32
+    lsr x22, x22, 32            // keep the low 32 bits
 
     mov x10, CELLS_X
     mov x11, CELLS_Y

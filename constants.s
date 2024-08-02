@@ -20,7 +20,8 @@
 .equ WHITE_PINK,      0xffc8da
 .equ DARK_PINK,       0xe86c95
 .equ RED,             0xe41818
-.equ GRAY,            0xe4e4e4
+.equ LIGHT_GRAY,      0xe4e4e4
+.equ DARK_GRAY,       0xd9d9d9
 .equ WHITE,           0xffffff
 .equ BLACK,           0x000000
 
