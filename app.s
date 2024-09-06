@@ -59,7 +59,7 @@ main:
 /*
 wait for keys to be released
 check for pressed keys in a loop:
-    a move-key is pressed:
+    a move-key or the flag key is pressed:
         execute the correct operation
         these calls will jump back to userInputLoop
     the space is pressed:
@@ -94,6 +94,10 @@ _userInputLoop:
     // W
     and w10, w24, 0b00000010
     cbnz w10, move_up
+
+    // F
+    and w10, w24, 0b01000000
+    cbnz w10, set_flag
 
     // space
     and w10, w24, 0b00100000

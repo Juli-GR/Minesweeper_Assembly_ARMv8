@@ -66,8 +66,13 @@ unmark_cell:
     add x11, x19, x10
     add x12, x20, x10
     ldur w9, [x12]
-    cbnz x9, open
+    cmp x9, 1
+    b.eq open
+    b.gt flag
     bl draw_closed_cell
+    b _unmark_cell
+flag:
+    bl draw_flag
     b _unmark_cell
 open:
     ldur w3, [x11]
@@ -77,8 +82,35 @@ _unmark_cell:
     add sp, sp, 8
     ret
 
+
+.globl set_flag
+set_flag:
+    mov x10, CELLS_X
+    mul x10, x10, x22
+    add x10, x10, x21
+    lsl x10, x10, 2
+    add x11, x19, x10
+    add x12, x20, x10
+    ldur w9, [x12]
+    cmp x9, 1
+    b.eq userInputLoop          // if the cell is open
+                                // jump back to userInputLoop
+    mov x1, x21
+    mov x2, x22
+    b.gt remove_flag
+    mov x9, 2
+    stur w9, [x12]
+    bl draw_flag
+    b userInputLoop
+remove_flag:
+    mov x9, 0
+    stur w9, [x12]
+    bl draw_closed_cell
+    b userInputLoop
+
+
 /*
-open current cell
+open current cell if doesn't have a flag
 run the cascade algorithm if it is a 0-cell
 return value in x1:
     1 --> Win
@@ -97,6 +129,12 @@ openCell:
     lsl x10, x10, 2             // x10: ( y*CELLS_X + x ) * 4
     add x23, x19, x10           // x23: index in the bombs matrix
     add x12, x20, x10           // x12: index in the cells matrix
+
+    // check that it doesn't have a flag
+    ldur w9, [x12]
+    cmp x9, 2
+    b.eq _openCell
+
     mov x9, 1
     stur w9, [x12]              // open the cell
     add x25, x25, 1             // increase open cells counter

@@ -6,6 +6,11 @@
     .equ RAND_NUM_B,      4644327
     .equ SEED,            4839
 
+/*
+0: closed
+1: open
+2: flag
+*/
 .globl create_cells_matrix
 create_cells_matrix:
     b initialize

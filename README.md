@@ -21,8 +21,8 @@ lines in different terminals
 make runQEMU
 make runGPIOM
 ```
-In the second terminal, by typing "w", "a", "s" and "d" you can move the selected cell and then open it with the space key.  
-At the moment, there is no way to place flags, but you can win by opening all the non-bomb cells.  
+In the second terminal, by typing "w", "a", "s" and "d" you can move the selected cell and then open it with the space key. To place flags use "f".  
+You can win by opening all the non-bomb cells.  
 When you win or lose the screen turns white or black respectively.  
 To change the position of the bombs you can change the SEED constant in the matrices.s file to any number.
 

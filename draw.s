@@ -259,3 +259,24 @@ _draw_open_cell:
     ldr x21, [sp, 40]
     add sp, sp, 48
     ret
+
+.globl draw_flag
+draw_flag:
+    // args: x1: x, x2: y
+    sub sp, sp, 16
+    str x22, [sp, 8]
+    str lr, [sp]
+
+    ldr x5, =RED
+    mov x22, PIXELS_PER_CELL
+    mul x1, x1, x22
+    mul x2, x2, x22
+
+    add x3, x1, PIXELS_PER_CELL
+    add x4, x2, PIXELS_PER_CELL
+    bl square
+
+    ldr lr, [sp]
+    ldr x22, [sp, 8]
+    add sp, sp, 16
+    ret

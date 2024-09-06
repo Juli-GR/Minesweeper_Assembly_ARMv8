@@ -147,7 +147,7 @@ checkNeighbor:
     add x10, x26, x22           // x10: index in the bombs matrix
     add x11, x27, x22           // x11: index in the cells matrix
     ldur w9, [x11]
-    cbnz x9, _checkNeighbor     // if open, return
+    cbnz x9, _checkNeighbor     // if open or flag, return
     mov x9, 1
     stur w9, [x11]              // open the cell
     add x25, x25, 1             // increase open cells counter
