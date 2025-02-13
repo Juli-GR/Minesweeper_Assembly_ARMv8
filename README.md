@@ -2,7 +2,7 @@
 
 This minesweeper was programmed using the base provided by
 the Computer Organization course at FAMAF in 2023
-(start.s, gpiom and Makefile files)  
+(start.s, gpiom and Makefile files) but as a personal project separate from the course.  
 
 ![minesweeper-demo](media/minesweeper-demo.gif?raw=true)
 
